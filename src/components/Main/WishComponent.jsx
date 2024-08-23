@@ -15,7 +15,7 @@ function WishComponent() {
     
     return (
         <>
-            <div className='flex flex-wrap justify-center gap-6'>
+            <div className='flex flex-wrap justify-center gap-6 h-auto'>
 
                 {
                     wishList.lenght !== 0 &&
