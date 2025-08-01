@@ -5,4 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   // base: ["/Menu"],
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://restcountries.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })

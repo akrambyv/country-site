@@ -5,7 +5,7 @@ import Card from './Card Folder/Card';
 
 function Main() {
   const { wishList, setWishList } = useContext(WISHCONTEXT);
-  const { data } = useContext(DATA);
+  const { data, loading, error } = useContext(DATA);
 
   const [slice, setSlice] = useState(20);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,11 +22,11 @@ function Main() {
   };
 
   // Filter data based on search query
-  const filteredData = data
+  const filteredData = data && Array.isArray(data)
     ? data.filter(item => {
-        const name = item.name?.common || '';
-        return name.toLowerCase().includes(searchQuery.toLowerCase());
-      })
+      const name = item.name?.common || '';
+      return name.toLowerCase().includes(searchQuery.toLowerCase());
+    })
     : [];
 
   return (
@@ -36,7 +36,7 @@ function Main() {
         <h1 className='font-bold text-[45px]'>Ölkə axtarışına <p className='text-[#6366F1] font-bold'>Xoş gəlmisiniz</p></h1>
         <p className='pt-3 text-[17px]'>Aşağıdan bütün ölkələri axtara və onlar haqqında ətraflı məlumat tapa <br /> bilərsiniz!</p>
         <div className='pt-[40px] flex gap-3 justify-center'>
-          <button 
+          <button
             onClick={() => setShowInput(true)}
             className='bg-[#6366F1] text-white p-4 font-bold text-[18px] pl-[32px] pr-[32px] rounded-md'
           >
@@ -58,18 +58,24 @@ function Main() {
       </div>
 
       <div className='flex flex-wrap justify-center gap-6'>
-        {
-          filteredData.length > 0
-            ? filteredData.slice(0, slice).map((item, i) => (
-                <Card key={i} item={item} addToWishList={addToWishList} />
-              ))
-            : <p>No results found.</p>
-        }
+        {loading ? (
+          <p>Yüklənir...</p>
+        ) : error ? (
+          <p className='text-red-600'>Xəta baş verdi: {error}</p>
+        ) : filteredData.length > 0 ? (
+          filteredData.slice(0, slice).map((item, i) => (
+            <Card key={i} item={item} addToWishList={addToWishList} />
+          ))
+        ) : (
+          <p>Nəticə tapılmadı.</p>
+        )}
       </div>
 
-      <div className='text-center'>
-        <button onClick={() => setSlice(slice + 10)} className='bg-blue-600 text-white m-7 rounded-md p-3'>Elave Et</button>
-      </div>
+      {!loading && !error && filteredData.length > 0 && (
+        <div className='text-center'>
+          <button onClick={() => setSlice(slice + 10)} className='bg-blue-600 text-white m-7 rounded-md p-3'>Elave Et</button>
+        </div>
+      )}
 
     </main>
   );
